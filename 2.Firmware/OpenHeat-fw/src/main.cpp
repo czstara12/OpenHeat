@@ -1,11 +1,17 @@
 #include <Arduino.h>
 #include "OpenT12.h"
 
+
 BluetoothSerial SerialBT;
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
 #endif
 
+int thermoDO = 19;
+int thermoCS = 5;
+int thermoCLK = 18;
+
+MAX6675 thermocouple(thermoCLK, thermoCS, thermoDO);
 OneButton RButton(BUTTON_PIN, true);
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C Disp(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 22, /* data=*/21);
 PID MyPID(&TipTemperature, &PID_Output, &PID_Setpoint, aggKp, aggKi, aggKd, DIRECT);
@@ -59,6 +65,7 @@ uint8_t Language = LANG_Chinese;
 uint8_t MenuListMode = false;
 
 float ADC_PID_Cycle = 100;
+float MAX6675Temp_Cycle = 300;  //MAX6675温度采集周期
 
 //面板状态条
 uint8_t TempCTRL_Status = TEMP_STATUS_OFF;
@@ -143,7 +150,7 @@ void setup()
     LoadTipConfig();
 
     //显示Logo
-//    EnterLogo();
+    //EnterLogo();
 
     //开机密码
     while (!EnterPasswd())
@@ -158,6 +165,7 @@ void loop()
 {
     //获取按键
     sys_KeyProcess();
+    
 
     if (!Menu_System_State)
     {
@@ -166,7 +174,7 @@ void loop()
         //更新系统事件：：系统事件可能会改变功率输出
         TimerEventLoop();
     }
-
+    
 
     //更新状态码
     SYS_StateCode_Update();

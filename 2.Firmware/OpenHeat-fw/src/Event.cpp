@@ -78,9 +78,9 @@ void TimerEventLoop(void)
     } else if (TipCallSleepEvent || SleepTime != 0 && TimerEventTimer > Minute2Millis(SleepTime))
     {
         //进入休眠
-        SleepEvent = true;
+        //SleepEvent = true;
         //锁定编码器，因为休眠模式中不允许修改设定温度
-        Counter_LOCK_Flag = true;
+        //Counter_LOCK_Flag = true;
     } else
     {
         if (SleepEvent)

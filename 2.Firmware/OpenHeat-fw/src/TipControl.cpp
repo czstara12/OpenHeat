@@ -18,14 +18,17 @@ uint8_t POWER = 0;
 uint8_t PWM = 0;
 uint8_t LastPWM = 0;
 uint16_t LastADC = 0;
+double LastMAX6675Temp = 0;
 double TipTemperature = 0;
 double PID_Output = 0;
 double PID_Setpoint = 0;
 double TempGap = 0;
 uint32_t ADCSamplingInterval = 0; //ADC采样间隔(ms)
+
+
 //PID
-float aggKp = 30.0, aggKi = 0, aggKd = 0.5;
-float consKp = 20.0, consKi = 1, consKd = 0.5;
+float aggKp = 60.0, aggKi = 0, aggKd = 0.5;
+float consKp = 40.0, consKi = 1, consKd = 0.5;
 
 //初始化烙铁头温控系统
 void TipControlInit(void)
@@ -61,7 +64,7 @@ void TipControlInit(void)
 //计算实际温度
 double CalculateTemp(double ADC, double P[])
 {
-    TipTemperature = P[0] + ADC * P[1] + ADC * ADC * P[2] + ADC * ADC * ADC * P[3];
+    //TipTemperature = P[0] + ADC * P[1] + ADC * ADC * P[2] + ADC * ADC * ADC * P[3];
     return TipTemperature;
 }
 
@@ -108,7 +111,7 @@ int GetADC0(void)
     {
 
         ADCSamplingInterval = millis() - ADCSamplingTime;
-        if (ADCSamplingInterval < ADC_PID_Cycle * (9 / 10.0)) return LastADC; //9/10周期ADC不应该工作，应该把时间留给加热
+        if (ADCSamplingInterval < ADC_PID_Cycle * (9 / 10.0)) return LastADC; // 9/10周期ADC不应该工作，应该把时间留给加热
 
         //若原输出非关闭，则在关闭输出后等待一段时间，因为电热偶和加热丝是串在一起的，只有不加热的时候才能安全访问热偶温度
         if (PWMOutput_Lock == false)
@@ -126,7 +129,7 @@ int GetADC0(void)
     }
 
     //读取并平滑滤波经过运算放大器放大后的热偶ADC数据
-    uint16_t ADC_RAW = analogRead(TIP_ADC_PIN);
+    uint16_t ADC_RAW = analogRead(TIP_ADC_PIN); //从引脚获取ADC值
     uint16_t ADC;
 
     //卡尔曼滤波器
@@ -143,6 +146,31 @@ int GetADC0(void)
 
     LastADC = ADC;
     return LastADC;
+}
+
+// 获取获取MAX6675的温度数据
+double GetMAX6675Temp()
+{
+    static uint32_t MAX6675TempSamplingTime = 0; //上次采样时间
+    uint32_t MAX6675TempSamplingInterval = 0; //MAX6675温度采样间隔(ms)
+
+    if (SYS_Ready)
+    {
+
+        MAX6675TempSamplingInterval = millis() - MAX6675TempSamplingTime;
+        if (MAX6675TempSamplingInterval < MAX6675Temp_Cycle) return LastMAX6675Temp; //MAX6675温度采样间隔 未到达  设定周期
+
+    }
+
+    //获取MAX6675的温度数据
+    float MAX6675Temp;
+    MAX6675Temp = thermocouple.readCelsius();
+
+    //记录采样间隔时间
+    MAX6675TempSamplingTime = millis();
+    LastMAX6675Temp = MAX6675Temp;
+
+    return LastMAX6675Temp;
 }
 
 //设置输出功率
@@ -173,19 +201,22 @@ void TemperatureControlLoop(void)
     {
         //短时功率加成
         PID_Setpoint += BoostTemp;
-    } else if (SleepEvent)
+    } else if (SleepEvent) //睡眠模式
     {
         PID_Setpoint = SleepTemp;
     }
 
-    PID_Setpoint = constrain(PID_Setpoint, TipMinTemp, TipMaxTemp);
+    PID_Setpoint = constrain(PID_Setpoint, TipMinTemp, TipMaxTemp); //限定PID上下限
     //尝试访问ADC
-    ADC = GetADC0();
-    if (ADC != -1)
+    //ADC = GetADC0();
+    
+    //尝试获取温度
+    TipTemperature = GetMAX6675Temp();
+    if (TipTemperature > 0/*ADC != -1*/)
     {
 
-        TipTemperature = CalculateTemp((double) LastADC, PTemp);
-        TempGap = abs(PID_Setpoint - TipTemperature);
+        //TipTemperature = CalculateTemp((double) LastADC, PTemp); //计算实际温度
+        TempGap = abs(PID_Setpoint - TipTemperature);  //实际温度与设定温度的差值
 
         //根据温差选择合适的ADC-PID采样周期
         if (TempGap > 150) ADC_PID_Cycle = ADC_PID_Cycle_List[0];
@@ -203,7 +234,7 @@ void TemperatureControlLoop(void)
             else MyPID.SetTunings(aggKp, aggKi, aggKd);
             //更新PID采样时间：采样时间可被Shell实时更改
             //MyPID.SetSampleTime(PIDSampleTime);
-            MyPID.SetSampleTime(ADC_PID_Cycle);
+            MyPID.SetSampleTime(ADC_PID_Cycle); //设置采样时间  设置执行计算的时间段（以毫秒为单位）
 
             //尝试计算PID
             //printf("计算PID：%d\n PID输出:%lf", MyPID.Compute(), PID_Output);
@@ -219,6 +250,7 @@ void TemperatureControlLoop(void)
 
         //串口打印温度
         //printf("Temp:%lf,%lf,%d\r\n", TipTemperature, PID_Setpoint, ADC);
+        printf("Temp:%lf\r\n", TipTemperature);
 
         /////////////////////////////////////////////////////////////////////////////////////////////
     }
