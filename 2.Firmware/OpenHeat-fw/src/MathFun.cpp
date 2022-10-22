@@ -127,7 +127,7 @@ float kalmanFilter(KFP* kfp, float input)
     kfp->Kg = kfp->Now_P / (kfp->Now_P + kfp->R);
     //更新最优值方程：k时刻状态变量的最优值 = 状态变量的预测值 + 卡尔曼增益 * （测量值 - 状态变量的预测值）
     kfp->out = kfp->out + kfp->Kg * (input - kfp->out);//因为这一次的预测值就是上一次的输出值
-    //更新协方差方程: 本次的系统协方差付给 kfp->LastP 威下一次运算准备。
+    //更新协方差方程: 本次的系统协方差付给 kfp->LastP 为下一次运算准备。
     kfp->LastP = (1 - kfp->Kg) * kfp->Now_P;
     return kfp->out;
 }

@@ -117,12 +117,12 @@ void setup()
 
     //初始化OLED
     Disp.begin();
-    Disp.setBusClock(921600);
-    Disp.enableUTF8Print();
-    Disp.setFontDirection(0);
+    Disp.setBusClock(921600);  //设置总线时钟
+    Disp.enableUTF8Print();    // 启用 UTF8打印  
+    Disp.setFontDirection(0);  // 设置字体方向
     Disp.setFontPosTop();
-    Disp.setFont(u8g2_font_wqy12_t_gb2312);
-    Disp.setDrawColor(1);
+    Disp.setFont(u8g2_font_wqy12_t_gb2312);  // 设置字体集
+    Disp.setDrawColor(1);      //设置绘制颜色
     Disp.setFontMode(1);
 
     ////////////////////////////初始化软件/////////////////////////////

@@ -1,5 +1,23 @@
 # OpenHeat：开源智能加热台
 
+# 添加&修改内容
+
+1. 添加 [MAX6675代码](https://github.com/adafruit/MAX6675-library)，获取K型热电偶温度，可正常使用。
+
+2. 增加外壳文件，修改自 *酒鬼橘子* 。
+
+   <img src="3.Docs/1.Images/6.jpg" style="zoom: 28%;" />
+
+3. 为配套该外壳，增加100x100的热床和中间夹层。已上传至立创EDA，方便白嫖，跳转链接为： [OpenHeat热床](https://oshwhub.com/u_16/New-Project) 。文件修改自 *酒鬼橘子* 。
+
+   <img src="https://songhailong-1257323743.cos.ap-chengdu.myqcloud.com/image-20221022172756639.png" alt="image-20221022172756639" style="zoom: 25%;" />
+
+   <img src="https://songhailong-1257323743.cos.ap-chengdu.myqcloud.com/image-20221022172914637.png" alt="image-20221022172914637" style="zoom:25%;" />
+
+4. 更新 [U8g2库](https://github.com/olikraus/U8g2_Arduino)，如后续仍出现无法显示，串口提示 `Bus is in Slave Mode` ，大概率是U8g2库问题，更新到最新版库即可。
+
+# 以下为稚晖君原版内容
+
 > 用于PCB回流焊的实用加热台，比较炫酷，可能目前市面上 **颜值最高** & **功能最强** 的加热台。
 
 **参数：** 硬件方面基于`ESP32PICO-D4`芯片，输入电源`24V/10A`，最大功率200W，加热温度最高300℃；带蓝牙功能，***后续有空的话我会开发手机APP用于设置升温曲线*** 。
