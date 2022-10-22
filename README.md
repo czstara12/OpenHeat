@@ -8,13 +8,17 @@
 
    <img src="3.Docs/1.Images/6.jpg" style="zoom: 28%;" />
 
-3. 为配套该外壳，增加100x100的热床和中间夹层。已上传至立创EDA，方便白嫖，跳转链接为： [OpenHeat热床](https://oshwhub.com/u_16/New-Project) 。文件修改自 *酒鬼橘子* 。
+3. 为配套该外壳，增加100x100的热床和中间夹层。已上传至立创EDA，方便白嫖，跳转链接为： [OpenHeat热床](https://oshwhub.com/u_16/open-heat-hot-bed) 。文件修改自 *酒鬼橘子* 。
 
    <img src="https://songhailong-1257323743.cos.ap-chengdu.myqcloud.com/image-20221022172756639.png" alt="image-20221022172756639" style="zoom: 25%;" />
 
    <img src="https://songhailong-1257323743.cos.ap-chengdu.myqcloud.com/image-20221022172914637.png" alt="image-20221022172914637" style="zoom:25%;" />
 
 4. 更新 [U8g2库](https://github.com/olikraus/U8g2_Arduino)，如后续仍出现无法显示，串口提示 `Bus is in Slave Mode` ，大概率是U8g2库问题，更新到最新版库即可。
+
+<img src="3.Docs\1.Images\7.jpg" style="zoom: 15%;" />
+
+<img src="3.Docs\1.Images\8.jpg" style="zoom:15%;" />
 
 # 以下为稚晖君原版内容
 
