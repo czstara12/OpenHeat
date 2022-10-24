@@ -16,9 +16,9 @@
 
 4. 更新 [U8g2库](https://github.com/olikraus/U8g2_Arduino)，如后续仍出现无法显示，串口提示 `Bus is in Slave Mode` ，大概率是U8g2库问题，更新到最新版库即可。
 
-<img src="3.Docs\1.Images\7.jpg" style="zoom: 15%;" />
+<img src="3.Docs\1.Images\7.jpg" style="zoom: 50%;" />
 
-<img src="3.Docs\1.Images\8.jpg" style="zoom:15%;" />
+<img src="3.Docs\1.Images\8.jpg" style="zoom:50%;" />
 
 # 以下为稚晖君原版内容
 
